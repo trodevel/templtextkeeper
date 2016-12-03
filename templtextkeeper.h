@@ -19,15 +19,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 2241 $ $Date:: 2015-08-04 #$ $Author: serge $
+// $Revision: 5130 $ $Date:: 2016-12-02 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_H
 #define LIB_TEMPLTEXTKEEPER_H
 
 #include <string>                   // std::string
 #include <map>                      // std::map
-
-#include <boost/property_tree/ptree.hpp>    // boost::property_tree::ptree
 
 #include "../templtext/templ.h"     // Templ
 
@@ -48,22 +46,36 @@ public:
     bool init(
             const std::string & config_file );
 
-    bool has_template( const std::string & name ) const;
+    bool has_template( uint32_t id ) const;
 
-    const Templ & get_template( const std::string & name ) const;
-
-private:
-    typedef std::map<std::string, Templ*>  MapStrToTempl;
+    const Templ & get_template( uint32_t id ) const;
 
 private:
+    typedef std::map<uint32_t, std::string>     MapIdToTemplName;
+    typedef std::map<uint32_t, Templ*>          MapIdToTempl;
 
-    void iterate_and_extract( const std::string & parent_name, const boost::property_tree::ptree & pt );
-
-    void extract_templates( const boost::property_tree::ptree & pt );
+    struct LocalizedTemplate
+    {
+        uint32_t    id;
+        uint32_t    parent_id;
+        std::string locale;
+        std::string name;
+        std::string templ;
+    };
 
 private:
 
-    MapStrToTempl   templs_;
+    void process_line( const std::string & l );
+    void process_line_t( const std::string & l );
+    void process_line_l( const std::string & l );
+
+    LocalizedTemplate to_localized_templ( const std::string & l );
+
+    void parse_lines( const std::vector<std::string> & lines );
+
+private:
+
+    MapIdToTempl        templs_;
 };
 
 NAMESPACE_TEMPLTEXTKEEPER_END

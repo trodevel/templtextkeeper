@@ -19,14 +19,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 2249 $ $Date:: 2015-08-04 #$ $Author: serge $
+// $Revision: 5132 $ $Date:: 2016-12-02 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 
-#include <stdexcept>                    // std::invalid_argument
+#include "../utils/read_config_file.h"  // read_config_file
+#include "../utils/tokenizer.h"         // tokenize_to_vector
 
-// for config reading
-#include <boost/property_tree/ini_parser.hpp>
+#include <stdexcept>                    // std::invalid_argument
 
 NAMESPACE_TEMPLTEXTKEEPER_START
 
@@ -46,54 +46,106 @@ bool TemplTextKeeper::init(
     if( config_file.empty() )
         return false;
 
-    boost::property_tree::ptree pt;
+    try
+    {
+        std::vector<std::string> lines;
 
-    boost::property_tree::ini_parser::read_ini( config_file, pt );
+        read_config_file( config_file, lines );
 
-    extract_templates( pt );
+        parse_lines( lines );
+    }
+    catch( std::exception & e )
+    {
+        throw e;
+    }
 
     return true;
 }
 
-void TemplTextKeeper::iterate_and_extract( const std::string & parent_name, const boost::property_tree::ptree & pt )
+void TemplTextKeeper::process_line( const std::string & line )
 {
-    auto it_end = pt.end();
-    for( auto it = pt.begin(); it != it_end; ++it )
+    if( line.empty() )
+        throw std::runtime_error( "parse_line: invalid entry - empty line" );
+
+    if( line[0] == "T" )
     {
-        const std::string & name    = it->first;
-        const std::string & str     = it->second.data();
-
-        std::string templ_name = parent_name + "." + name;
-
-        Templ * t = new Templ( str, templ_name );
-
-        templs_.insert( MapStrToTempl::value_type( templ_name, t ) );
+        process_line_t( line );
+    }
+    else if( line[0] == "L" )
+    {
+        process_line_l( elems );
+    }
+    else
+    {
+        throw std::runtime_error( "parse_line: invalid entry " + line );
     }
 }
 
-void TemplTextKeeper::extract_templates( const boost::property_tree::ptree & pt )
+void TemplTextKeeper::process_line_t( const std::string & line )
 {
-    auto it_end = pt.end();
-    for( auto it = pt.begin(); it != it_end; ++it )
-    {
-        const std::string & name    = it->first;
+}
 
-        iterate_and_extract( name, it->second );
+void TemplTextKeeper::process_line_l( const std::string & line )
+{
+    auto e = to_localized_templ( line );
+
+    Templ * t = new Templ( e.templ, e.name );
+
+    auto b = templs_.insert( MapIdToTempl::value_type( e.id, t ) ).second;
+
+    if( b == false )
+    {
+        throw std::runtime_error( "cannot add localized entry with id " + std::to_string( e.id ) );
     }
 }
 
-bool TemplTextKeeper::has_template( const std::string & name ) const
+TemplTextKeeper::LocalizedTemplate TemplTextKeeper::to_localized_templ( const std::string & l )
 {
-    return ( templs_.count( name ) > 0 );
+    // format: L;1;1;de;Sagen;%TEXT.
+    LocalizedTemplate res;
+
+    std::vector< std::string > elems;
+    tokenize_to_vector( elems, l, ";" );
+
+    if( elems.size() < 6 )
+        throw std::runtime_error( "not enough arguments (<6) in entry: " + l  );
+
+    try
+    {
+        res.id          = std::stoi( elems[1] );
+        res.parent_id   = std::stoi( elems[2] );
+        res.locale      = elems[3];
+        res.name        = elems[4];
+        res.templ       = elems[5];
+    }
+    catch( std::exception & e )
+    {
+        throw std::runtime_error( "invalid entry: " + l );
+    }
+
+    return res;
 }
 
-const TemplTextKeeper::Templ & TemplTextKeeper::get_template( const std::string & name ) const
+void TemplTextKeeper::parse_lines( const std::vector<std::string> & lines )
 {
-    auto it = templs_.find( name );
+    for( auto & l : lines )
+    {
+        process_line( l );
+    }
+}
+
+bool TemplTextKeeper::has_template( uint32_t id ) const
+{
+    return ( templs_.count( id ) > 0 );
+}
+
+const TemplTextKeeper::Templ & TemplTextKeeper::get_template( uint32_t id ) const
+{
+    auto it = templs_.find( id );
 
     if( it == templs_.end() )
     {
-        throw std::invalid_argument( ( "cannot find template '" + name + "'" ).c_str() );
+        throw std::invalid_argument( "cannot find template '" + std::to_string( id ) + "'" );
     }
 
     return *it->second;
