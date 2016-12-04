@@ -19,21 +19,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 2241 $ $Date:: 2015-08-04 #$ $Author: serge $
+// $Revision: 5144 $ $Date:: 2016-12-04 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
+#include <iostream>                         // std::cout
 
 #include "templtextkeeper.h"                // TemplTextKeeper
-
-std::string create_key( const std::string & name, int num, const std::string & lang )
-{
-    std::stringstream os;
-
-    os << "Templates." << name << "0" << num << "[" << lang << "]";
-
-    return os.str();
-}
 
 std::string show_placeholders( const std::set<std::string> & ph )
 {
@@ -154,28 +146,18 @@ int main()
 {
     templtextkeeper::TemplTextKeeper tt;
 
-    tt.init( "templates.ini" );
+    tt.init( "templates.csv" );
 
-    for( int i = 1; i <= 7; ++i )
+    for( unsigned int i = 1; i <= 12; ++i )
     {
-        std::string key_1 = create_key( "Text", i, "en" );
-        std::string key_2 = create_key( "Text", i, "de" );
-
-        if( tt.has_template( key_1 ) )
+        if( tt.has_template( i ) )
         {
-            const templtext::Templ & t = tt.get_template( key_1 );
-            std::cout << "templ 0" << i << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
-        }
-
-        if( tt.has_template( key_2 ) )
-        {
-            const templtext::Templ & t = tt.get_template( key_1 );
-            std::cout << "templ 0" << i << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
+            const templtext::Templ & t = tt.get_template( i );
+            std::cout << "templ " << i << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
         }
     }
 
-    std::string key = create_key( "Text", 3, "en" );
-    const templtext::Templ & t = tt.get_template( key );
+    const templtext::Templ & t = tt.get_template( 6 );
 
     test02( t );
     test03( t );

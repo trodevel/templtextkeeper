@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5130 $ $Date:: 2016-12-02 #$ $Author: serge $
+// $Revision: 5140 $ $Date:: 2016-12-04 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_H
 #define LIB_TEMPLTEXTKEEPER_H
@@ -38,6 +38,20 @@ class TemplTextKeeper
 public:
     typedef templtext::Templ Templ;
 
+    struct LocalizedTemplateInfo
+    {
+        uint32_t    id;
+        std::string name;
+    };
+
+    typedef std::map<std::string, LocalizedTemplateInfo>    MapLocaleToLocTemplInfo;
+
+    struct TemplateInfo
+    {
+        std::string             name;
+        MapLocaleToLocTemplInfo localized_templ_info;
+    };
+
 public:
 
     TemplTextKeeper();
@@ -50,9 +64,18 @@ public:
 
     const Templ & get_template( uint32_t id ) const;
 
+    std::vector<TemplateInfo> get_template_list() const;
+
 private:
-    typedef std::map<uint32_t, std::string>     MapIdToTemplName;
+    typedef std::map<std::string, uint32_t>     MapTemplNameToTemplId;
+    typedef std::map<uint32_t, TemplateInfo>    MapIdToTemplateInfo;
     typedef std::map<uint32_t, Templ*>          MapIdToTempl;
+
+    struct GeneralTemplate
+    {
+        uint32_t    id;
+        std::string name;
+    };
 
     struct LocalizedTemplate
     {
@@ -69,13 +92,16 @@ private:
     void process_line_t( const std::string & l );
     void process_line_l( const std::string & l );
 
-    LocalizedTemplate to_localized_templ( const std::string & l );
+    GeneralTemplate     to_general_templ( const std::string & l );
+    LocalizedTemplate   to_localized_templ( const std::string & l );
 
     void parse_lines( const std::vector<std::string> & lines );
 
 private:
 
-    MapIdToTempl        templs_;
+    MapTemplNameToTemplId   templ_names_;   // map: general template id --> general template name
+    MapIdToTemplateInfo     templs_;        // map: general template id --> template info
+    MapIdToTempl            localized_templs_;
 };
 
 NAMESPACE_TEMPLTEXTKEEPER_END
