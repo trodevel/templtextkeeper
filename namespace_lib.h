@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 2240 $ $Date:: 2015-08-04 #$ $Author: serge $
+// $Revision: 2477 $ $Date:: 2015-09-03 #$ $Author: serge $
 
 #ifndef NAMESPACE_LIB_TEMPLTEXTKEEPER_H
 #define NAMESPACE_LIB_TEMPLTEXTKEEPER_H

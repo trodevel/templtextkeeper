@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5144 $ $Date:: 2016-12-04 #$ $Author: serge $
+// $Revision: 5151 $ $Date:: 2016-12-05 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
@@ -147,6 +147,25 @@ int main()
     templtextkeeper::TemplTextKeeper tt;
 
     tt.init( "templates.csv" );
+
+    auto info = tt.get_template_list();
+
+    std::cout << "all templates:\n" << std::endl;
+
+    for( auto & e : info )
+    {
+        for( auto & l : e.localized_templ_info )
+        {
+            std::cout << e.name << ";" << l.first << ";" << l.second.id << ";" << l.second.name << ";" << std::endl;
+        }
+
+        if( e.localized_templ_info.empty() )
+        {
+            std::cout << e.name << ";" << std::endl;
+        }
+    }
+
+    std::cout << "\ntests:\n" << std::endl;
 
     for( unsigned int i = 1; i <= 12; ++i )
     {
