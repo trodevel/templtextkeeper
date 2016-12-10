@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5151 $ $Date:: 2016-12-05 #$ $Author: serge $
+// $Revision: 5189 $ $Date:: 2016-12-08 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_H
 #define LIB_TEMPLTEXTKEEPER_H
@@ -52,6 +52,8 @@ public:
         MapLocaleToLocTemplInfo localized_templ_info;
     };
 
+    typedef std::map<uint32_t, TemplateInfo>    MapIdToTemplateInfo;
+
 public:
 
     TemplTextKeeper();
@@ -61,14 +63,14 @@ public:
             const std::string & config_file );
 
     bool has_template( uint32_t id ) const;
+    uint32_t find_template_for_locale( uint32_t id, const std::string & locale ) const;
 
     const Templ & get_template( uint32_t id ) const;
 
-    std::vector<TemplateInfo> get_template_list() const;
+    const MapIdToTemplateInfo & get_templates() const;
 
 private:
     typedef std::map<std::string, uint32_t>     MapTemplNameToTemplId;
-    typedef std::map<uint32_t, TemplateInfo>    MapIdToTemplateInfo;
     typedef std::map<uint32_t, Templ*>          MapIdToTempl;
 
     struct GeneralTemplate

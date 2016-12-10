@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5151 $ $Date:: 2016-12-05 #$ $Author: serge $
+// $Revision: 5189 $ $Date:: 2016-12-08 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
@@ -148,20 +148,20 @@ int main()
 
     tt.init( "templates.csv" );
 
-    auto info = tt.get_template_list();
+    auto info = tt.get_templates();
 
     std::cout << "all templates:\n" << std::endl;
 
     for( auto & e : info )
     {
-        for( auto & l : e.localized_templ_info )
+        for( auto & l : e.second.localized_templ_info )
         {
-            std::cout << e.name << ";" << l.first << ";" << l.second.id << ";" << l.second.name << ";" << std::endl;
+            std::cout << e.first << ";" << e.second.name << ";" << l.first << ";" << l.second.id << ";" << l.second.name << ";" << std::endl;
         }
 
-        if( e.localized_templ_info.empty() )
+        if( e.second.localized_templ_info.empty() )
         {
-            std::cout << e.name << ";" << std::endl;
+            std::cout << e.first << ";" << e.second.name << ";" << std::endl;
         }
     }
 

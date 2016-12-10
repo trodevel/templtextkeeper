@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5151 $ $Date:: 2016-12-05 #$ $Author: serge $
+// $Revision: 5189 $ $Date:: 2016-12-08 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 
@@ -203,6 +203,21 @@ bool TemplTextKeeper::has_template( uint32_t id ) const
     return ( localized_templs_.count( id ) > 0 );
 }
 
+uint32_t TemplTextKeeper::find_template_for_locale( uint32_t id, const std::string & locale ) const
+{
+    auto it = templs_.find( id );
+
+    if( it == templs_.end() )
+        return 0;
+
+    auto it2 = it->second.localized_templ_info.find( locale );
+
+    if( it2 == it->second.localized_templ_info.end() )
+        return 0;
+
+    return it2->second.id;
+}
+
 const TemplTextKeeper::Templ & TemplTextKeeper::get_template( uint32_t id ) const
 {
     auto it = localized_templs_.find( id );
@@ -215,16 +230,9 @@ const TemplTextKeeper::Templ & TemplTextKeeper::get_template( uint32_t id ) cons
     return *it->second;
 }
 
-std::vector<TemplTextKeeper::TemplateInfo> TemplTextKeeper::get_template_list() const
+const TemplTextKeeper::MapIdToTemplateInfo & TemplTextKeeper::get_templates() const
 {
-    std::vector<TemplateInfo> res;
-
-    for( auto & e : templs_ )
-    {
-        res.push_back( e.second );
-    }
-
-    return res;
+    return templs_;
 }
 
 NAMESPACE_TEMPLTEXTKEEPER_END
