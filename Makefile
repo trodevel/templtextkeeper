@@ -87,7 +87,7 @@ SRCC = templtextkeeper.cpp
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCC)) $(patsubst %.c,$(OBJDIR)/%.o,$(SRCC))
 
-LIB_NAMES = templtext utils
+LIB_NAMES = templtext utils lang_tools
 LIBS = $(patsubst %,$(BINDIR)/lib%.a,$(LIB_NAMES))
 
 all: static

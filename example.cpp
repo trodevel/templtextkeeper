@@ -19,13 +19,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5189 $ $Date:: 2016-12-08 #$ $Author: serge $
+// $Revision: 5263 $ $Date:: 2016-12-15 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
 #include <iostream>                         // std::cout
 
 #include "templtextkeeper.h"                // TemplTextKeeper
+
+#include "../lang_tools/str_helper.h"       // lang_tools::to_string_iso
 
 std::string show_placeholders( const std::set<std::string> & ph )
 {
@@ -156,7 +158,7 @@ int main()
     {
         for( auto & l : e.second.localized_templ_info )
         {
-            std::cout << e.first << ";" << e.second.name << ";" << l.first << ";" << l.second.id << ";" << l.second.name << ";" << std::endl;
+            std::cout << e.first << ";" << e.second.name << ";" << lang_tools::to_string_iso( l.first ) << ";" << l.second.id << ";" << l.second.name << ";" << std::endl;
         }
 
         if( e.second.localized_templ_info.empty() )

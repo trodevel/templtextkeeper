@@ -19,12 +19,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5189 $ $Date:: 2016-12-08 #$ $Author: serge $
+// $Revision: 5263 $ $Date:: 2016-12-15 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 
 #include "../utils/read_config_file.h"  // read_config_file
 #include "../utils/tokenizer.h"         // tokenize_to_vector
+#include "../lang_tools/parser.h"       // lang_tools::to_lang_iso
+#include "../lang_tools/str_helper.h"   // lang_tools::to_string_iso
 
 #include <stdexcept>                    // std::invalid_argument
 
@@ -126,7 +128,7 @@ void TemplTextKeeper::process_line_l( const std::string & line )
 
     if( b == false )
     {
-        throw std::runtime_error( "general template " + std::to_string( e.parent_id ) + " has already locale " + e.locale + ", cannot add localized template " + std::to_string( e.id ) );
+        throw std::runtime_error( "general template " + std::to_string( e.parent_id ) + " has already locale " + lang_tools::to_string_iso( e.locale ) + ", cannot add localized template " + std::to_string( e.id ) );
     }
 
     Templ * t = new Templ( e.templ, e.name );
@@ -178,7 +180,7 @@ TemplTextKeeper::LocalizedTemplate TemplTextKeeper::to_localized_templ( const st
     {
         res.id          = std::stoi( elems[1] );
         res.parent_id   = std::stoi( elems[2] );
-        res.locale      = elems[3];
+        res.locale      = lang_tools::to_lang_iso( elems[3] );
         res.name        = elems[4];
         res.templ       = elems[5];
     }
@@ -203,7 +205,7 @@ bool TemplTextKeeper::has_template( uint32_t id ) const
     return ( localized_templs_.count( id ) > 0 );
 }
 
-uint32_t TemplTextKeeper::find_template_for_locale( uint32_t id, const std::string & locale ) const
+uint32_t TemplTextKeeper::find_template_for_locale( uint32_t id, lang_tools::lang_e locale ) const
 {
     auto it = templs_.find( id );
 

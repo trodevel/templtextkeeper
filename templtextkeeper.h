@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5189 $ $Date:: 2016-12-08 #$ $Author: serge $
+// $Revision: 5263 $ $Date:: 2016-12-15 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_H
 #define LIB_TEMPLTEXTKEEPER_H
@@ -28,6 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <map>                      // std::map
 
 #include "../templtext/templ.h"     // Templ
+#include "../lang_tools/language_enum.h"    // lang_tools::lang_e
 
 #include "namespace_lib.h"          // NAMESPACE_TEMPLTEXTKEEPER_START
 
@@ -44,7 +45,7 @@ public:
         std::string name;
     };
 
-    typedef std::map<std::string, LocalizedTemplateInfo>    MapLocaleToLocTemplInfo;
+    typedef std::map<lang_tools::lang_e, LocalizedTemplateInfo>    MapLocaleToLocTemplInfo;
 
     struct TemplateInfo
     {
@@ -63,7 +64,7 @@ public:
             const std::string & config_file );
 
     bool has_template( uint32_t id ) const;
-    uint32_t find_template_for_locale( uint32_t id, const std::string & locale ) const;
+    uint32_t find_template_for_locale( uint32_t id, lang_tools::lang_e locale ) const;
 
     const Templ & get_template( uint32_t id ) const;
 
@@ -83,7 +84,7 @@ private:
     {
         uint32_t    id;
         uint32_t    parent_id;
-        std::string locale;
+        lang_tools::lang_e locale;
         std::string name;
         std::string templ;
     };
