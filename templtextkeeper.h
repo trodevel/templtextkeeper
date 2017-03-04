@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5263 $ $Date:: 2016-12-15 #$ $Author: serge $
+// $Revision: 5909 $ $Date:: 2017-03-03 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_H
 #define LIB_TEMPLTEXTKEEPER_H
@@ -39,21 +39,16 @@ class TemplTextKeeper
 public:
     typedef templtext::Templ Templ;
 
-    struct LocalizedTemplateInfo
+    struct Record
     {
-        uint32_t    id;
-        std::string name;
+        uint32_t            id;
+        lang_tools::lang_e  locale;
+        std::string         name;
+        std::string         localized_name;
+        std::string         templ;
     };
 
-    typedef std::map<lang_tools::lang_e, LocalizedTemplateInfo>    MapLocaleToLocTemplInfo;
-
-    struct TemplateInfo
-    {
-        std::string             name;
-        MapLocaleToLocTemplInfo localized_templ_info;
-    };
-
-    typedef std::map<uint32_t, TemplateInfo>    MapIdToTemplateInfo;
+    typedef std::vector<Record> Records;
 
 public:
 
@@ -63,16 +58,12 @@ public:
     bool init(
             const std::string & config_file );
 
-    bool has_template( uint32_t id ) const;
-    uint32_t find_template_for_locale( uint32_t id, lang_tools::lang_e locale ) const;
+    bool has_template( uint32_t id, lang_tools::lang_e locale ) const;
+    const Templ * find_template( uint32_t id, lang_tools::lang_e locale ) const;
 
-    const Templ & get_template( uint32_t id ) const;
-
-    const MapIdToTemplateInfo & get_templates() const;
+    const Records & get_templates( Records & res ) const;
 
 private:
-    typedef std::map<std::string, uint32_t>     MapTemplNameToTemplId;
-    typedef std::map<uint32_t, Templ*>          MapIdToTempl;
 
     struct GeneralTemplate
     {
@@ -83,11 +74,28 @@ private:
     struct LocalizedTemplate
     {
         uint32_t    id;
-        uint32_t    parent_id;
         lang_tools::lang_e locale;
         std::string name;
         std::string templ;
     };
+
+    struct LocalizedTemplateInfo
+    {
+        std::string name;
+        std::string templ;
+        Templ       * t;
+    };
+
+    typedef std::map<lang_tools::lang_e, LocalizedTemplateInfo>    MapLocaleToLocTemplInfo;
+
+    struct TemplateInfo
+    {
+        std::string             name;
+        MapLocaleToLocTemplInfo localized_templ_info;
+    };
+
+    typedef std::map<std::string, uint32_t>     MapTemplNameToTemplId;
+    typedef std::map<uint32_t, TemplateInfo>    MapIdToTemplateInfo;
 
 private:
 
@@ -102,9 +110,8 @@ private:
 
 private:
 
-    MapTemplNameToTemplId   templ_names_;   // map: general template id --> general template name
+    MapTemplNameToTemplId   templ_names_;   // map: general template name --> general template id
     MapIdToTemplateInfo     templs_;        // map: general template id --> template info
-    MapIdToTempl            localized_templs_;
 };
 
 NAMESPACE_TEMPLTEXTKEEPER_END

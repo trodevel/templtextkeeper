@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5263 $ $Date:: 2016-12-15 #$ $Author: serge $
+// $Revision: 5910 $ $Date:: 2017-03-03 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 
@@ -38,8 +38,11 @@ TemplTextKeeper::TemplTextKeeper()
 
 TemplTextKeeper::~TemplTextKeeper()
 {
-    for( auto & e : localized_templs_ )
-        delete e.second;
+    for( auto & e : templs_ )
+    {
+        for( auto & t : e.second.localized_templ_info )
+            delete t.second.t;
+    }
 }
 
 bool TemplTextKeeper::init(
@@ -95,14 +98,14 @@ void TemplTextKeeper::process_line_t( const std::string & line )
 
     if( b == false )
     {
-        throw std::runtime_error( "duplicate general template id " + std::to_string( e.id ) );
+        throw std::runtime_error( "duplicate template id " + std::to_string( e.id ) );
     }
 
     b = templ_names_.insert( MapTemplNameToTemplId::value_type( e.name, e.id ) ).second;
 
     if( b == false )
     {
-        throw std::runtime_error( "duplicate general template name '" + e.name + "', id " + std::to_string( e.id ) );
+        throw std::runtime_error( "duplicate template name '" + e.name + "', id " + std::to_string( e.id ) );
     }
 }
 
@@ -110,34 +113,26 @@ void TemplTextKeeper::process_line_l( const std::string & line )
 {
     auto e = to_localized_templ( line );
 
-    auto it = templs_.find( e.parent_id );
+    auto it = templs_.find( e.id );
 
     if( it == templs_.end() )
     {
-        throw std::runtime_error( "cannot find parent general template id " + std::to_string( e.parent_id ) );
+        throw std::runtime_error( "cannot find template id " + std::to_string( e.id ) );
     }
 
     auto & info = it->second;
 
     LocalizedTemplateInfo loc_info;
 
-    loc_info.id     = e.id;
     loc_info.name   = e.name;
+    loc_info.templ  = e.templ;
+    loc_info.t      = new Templ( e.templ, e.name );
 
     auto b = info.localized_templ_info.insert( MapLocaleToLocTemplInfo::value_type( e.locale, loc_info ) ).second;
 
     if( b == false )
     {
-        throw std::runtime_error( "general template " + std::to_string( e.parent_id ) + " has already locale " + lang_tools::to_string_iso( e.locale ) + ", cannot add localized template " + std::to_string( e.id ) );
-    }
-
-    Templ * t = new Templ( e.templ, e.name );
-
-    b = localized_templs_.insert( MapIdToTempl::value_type( e.id, t ) ).second;
-
-    if( b == false )
-    {
-        throw std::runtime_error( "duplicate localized template id " + std::to_string( e.id ) );
+        throw std::runtime_error( "template " + std::to_string( e.id ) + " has already locale " + lang_tools::to_string_iso( e.locale ) );
     }
 }
 
@@ -167,22 +162,21 @@ TemplTextKeeper::GeneralTemplate TemplTextKeeper::to_general_templ( const std::s
 
 TemplTextKeeper::LocalizedTemplate TemplTextKeeper::to_localized_templ( const std::string & l )
 {
-    // format: L;1;1;de;Sagen;%TEXT.
+    // format: L;1;de;Sagen;%TEXT.
     LocalizedTemplate res;
 
     std::vector< std::string > elems;
     tokenize_to_vector( elems, l, ";" );
 
-    if( elems.size() < 6 )
-        throw std::runtime_error( "not enough arguments (<6) in entry: " + l  );
+    if( elems.size() < 5 )
+        throw std::runtime_error( "not enough arguments (<5) in entry: " + l  );
 
     try
     {
-        res.id          = std::stoi( elems[1] );
-        res.parent_id   = std::stoi( elems[2] );
-        res.locale      = lang_tools::to_lang_iso( elems[3] );
-        res.name        = elems[4];
-        res.templ       = elems[5];
+        res.id   = std::stoi( elems[1] );
+        res.locale      = lang_tools::to_lang_iso( elems[2] );
+        res.name        = elems[3];
+        res.templ       = elems[4];
     }
     catch( std::exception & e )
     {
@@ -200,41 +194,60 @@ void TemplTextKeeper::parse_lines( const std::vector<std::string> & lines )
     }
 }
 
-bool TemplTextKeeper::has_template( uint32_t id ) const
-{
-    return ( localized_templs_.count( id ) > 0 );
-}
-
-uint32_t TemplTextKeeper::find_template_for_locale( uint32_t id, lang_tools::lang_e locale ) const
+bool TemplTextKeeper::has_template( uint32_t id, lang_tools::lang_e locale ) const
 {
     auto it = templs_.find( id );
 
     if( it == templs_.end() )
-        return 0;
+        return false;
+
+    auto & loc = it->second.localized_templ_info;
+
+    auto it_2 = loc.find( locale );
+
+    if( it_2 == loc.end() )
+        return false;
+
+    return true;
+}
+
+const TemplTextKeeper::Templ * TemplTextKeeper::find_template( uint32_t id, lang_tools::lang_e locale ) const
+{
+    auto it = templs_.find( id );
+
+    if( it == templs_.end() )
+        return nullptr;
 
     auto it2 = it->second.localized_templ_info.find( locale );
 
     if( it2 == it->second.localized_templ_info.end() )
-        return 0;
+        return nullptr;
 
-    return it2->second.id;
+    return it2->second.t;
 }
 
-const TemplTextKeeper::Templ & TemplTextKeeper::get_template( uint32_t id ) const
+const TemplTextKeeper::Records & TemplTextKeeper::get_templates( Records & res ) const
 {
-    auto it = localized_templs_.find( id );
+    Record r;
 
-    if( it == localized_templs_.end() )
+    for( auto & t : templs_ )
     {
-        throw std::invalid_argument( "cannot find template '" + std::to_string( id ) + "'" );
+        auto & loc = t.second.localized_templ_info;
+
+        r.id    = t.first;
+        r.name  = t.second.name;
+
+        for( auto & l : loc )
+        {
+            r.locale            = l.first;
+            r.localized_name    = l.second.name;
+            r.templ             = l.second.templ;
+
+            res.push_back( r );
+        }
     }
 
-    return *it->second;
-}
-
-const TemplTextKeeper::MapIdToTemplateInfo & TemplTextKeeper::get_templates() const
-{
-    return templs_;
+    return res;
 }
 
 NAMESPACE_TEMPLTEXTKEEPER_END

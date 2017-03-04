@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5263 $ $Date:: 2016-12-15 #$ $Author: serge $
+// $Revision: 5907 $ $Date:: 2017-03-03 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
@@ -150,35 +150,34 @@ int main()
 
     tt.init( "templates.csv" );
 
-    auto info = tt.get_templates();
+    templtextkeeper::TemplTextKeeper::Records info;
+
+    tt.get_templates( info );
 
     std::cout << "all templates:\n" << std::endl;
 
     for( auto & e : info )
     {
-        for( auto & l : e.second.localized_templ_info )
-        {
-            std::cout << e.first << ";" << e.second.name << ";" << lang_tools::to_string_iso( l.first ) << ";" << l.second.id << ";" << l.second.name << ";" << std::endl;
-        }
-
-        if( e.second.localized_templ_info.empty() )
-        {
-            std::cout << e.first << ";" << e.second.name << ";" << std::endl;
-        }
+        std::cout << e.id << ";" << e.name << ";" << lang_tools::to_string_iso( e.locale ) << ";" << e.localized_name << ";" << std::endl;
     }
 
     std::cout << "\ntests:\n" << std::endl;
 
-    for( unsigned int i = 1; i <= 12; ++i )
+    std::vector<lang_tools::lang_e> langs   = { lang_tools::lang_e::EN, lang_tools::lang_e::DE, lang_tools::lang_e::RU };
+
+    for( unsigned int i = 1; i <= 7; ++i )
     {
-        if( tt.has_template( i ) )
+        for( auto l : langs )
         {
-            const templtext::Templ & t = tt.get_template( i );
-            std::cout << "templ " << i << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
+            if( tt.has_template( i, l ) )
+            {
+                const templtext::Templ & t = * tt.find_template( i, l );
+                std::cout << "templ " << i << ":" << lang_tools::to_string( l ) << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
+            }
         }
     }
 
-    const templtext::Templ & t = tt.get_template( 6 );
+    const templtext::Templ & t = * tt.find_template( 3, lang_tools::lang_e::EN );
 
     test02( t );
     test03( t );

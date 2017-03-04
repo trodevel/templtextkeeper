@@ -6,21 +6,21 @@ T;5;Text05
 T;6;Text06
 T;7;Text07
 
-L;1;1;en;Say;%TEXT.
-L;2;1;de;Sagen;%TEXT.
-L;3;1;ru;Сказать;%TEXT.
+L;1;en;Say;%TEXT.
+L;1;de;Sagen;%TEXT.
+L;1;ru;Сказать;%TEXT.
 
-L;4;2;en;Announcement;This is English. %TEXT.
-L;5;2;de;Ankündigung;Das ist Deutsch. %TEXT.
+L;2;en;Announcement;This is English. %TEXT.
+L;2;de;Ankündigung;Das ist Deutsch. %TEXT.
 
-L;6;3;en;Greeting;Hello. %SALUTATION %NAME is greeting you. %TEXT.
-L;7;3;de;Begrüßung;Hallo. %SALUTATION %NAME grüßt dich. %TEXT.
+L;3;en;Greeting;Hello. %SALUTATION %NAME is greeting you. %TEXT.
+L;3;de;Begrüßung;Hallo. %SALUTATION %NAME grüßt dich. %TEXT.
 
-L;8;4;en;Greeting with date;Hello. %SALUTATION %NAME is greeting you. %TEXT. %DATE.
-L;9;4;de;Begrüßung mit Datum;Hallo. %SALUTATION %NAME grüßt dich. %TEXT. %DATE.
+L;4;en;Greeting with date;Hello. %SALUTATION %NAME is greeting you. %TEXT. %DATE.
+L;4;de;Begrüßung mit Datum;Hallo. %SALUTATION %NAME grüßt dich. %TEXT. %DATE.
 
-L;10;5;en;Just a test;Name %NAME, %{NAME}, %NAMENOT, %{NAME}NOT.
+L;5;en;Just a test;Name %NAME, %{NAME}, %NAMENOT, %{NAME}NOT.
 
-L;11;6;en;Just a test;some text $foo( A ) what do you think?
+L;6;en;Just a test;some text $foo( A ) what do you think?
 
-L;12;7;en;Just a test;some text $bar( A ) with several functions $bar( B )?
+L;7;en;Just a test;some text $bar( A ) with several functions $bar( B )?
