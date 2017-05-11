@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5910 $ $Date:: 2017-03-03 #$ $Author: serge $
+// $Revision: 5917 $ $Date:: 2017-03-06 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 

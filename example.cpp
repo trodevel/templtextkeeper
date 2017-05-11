@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5907 $ $Date:: 2017-03-03 #$ $Author: serge $
+// $Revision: 6925 $ $Date:: 2017-05-11 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
@@ -184,31 +184,6 @@ int main()
     test04( t );
     test05( t );
     test06( t );
-
-    /*
-    templtext::extract_function("$foo()");
-    templtext::extract_function("$foo(A)");
-    templtext::extract_function("$foo(AB)");
-    templtext::extract_function("$foo(AB,C)");
-    templtext::extract_function("$foo(AB,CD)");
-    templtext::extract_function("$foo(AB,CD,E)");
-    templtext::extract_function("$foo(AB,CD,EF)");
-    templtext::extract_function("$foo( A )");
-    templtext::extract_function("$foo( AB )");
-    templtext::extract_function("$foo( AB,C )");
-    templtext::extract_function("$foo( AB,CD )");
-    templtext::extract_function("$foo( AB,CD,E )");
-    templtext::extract_function("$foo( AB,CD,EF )");
-    templtext::extract_function("$foo( A )");
-    templtext::extract_function("$foo( AB )");
-    templtext::extract_function("$foo( AB, C )");
-    templtext::extract_function("$foo( AB, CD )");
-    templtext::extract_function("$foo( AB, CD, E )");
-    templtext::extract_function("$foo( AB, CD, EF )");
-
-    templtext::find_function("some text $foo( A ) what do think?");
-    templtext::find_function("some text $bar( A ) with several functions $bar( B )?");
-    */
 
     return 0;
 }
