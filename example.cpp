@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 6925 $ $Date:: 2017-05-11 #$ $Author: serge $
+// $Revision: 7371 $ $Date:: 2017-07-25 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
@@ -41,7 +41,40 @@ std::string show_placeholders( const std::set<std::string> & ph )
     return os.str();
 }
 
-void test02( const templtext::Templ & t )
+void test_01( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    templtextkeeper::TemplTextKeeper::Records info;
+
+    ttk.get_templates( info );
+
+    std::cout << "all templates:\n" << std::endl;
+
+    for( auto & e : info )
+    {
+        std::cout << e.id << ";" << e.name << ";" << lang_tools::to_string_iso( e.locale ) << ";" << e.localized_name << ";" << std::endl;
+    }
+}
+
+void test_01_b( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    std::cout << "\ntests:\n" << std::endl;
+
+    std::vector<lang_tools::lang_e> langs   = { lang_tools::lang_e::EN, lang_tools::lang_e::DE, lang_tools::lang_e::RU };
+
+    for( unsigned int i = 1; i <= 7; ++i )
+    {
+        for( auto l : langs )
+        {
+            if( ttk.has_template( i, l ) )
+            {
+                const templtext::Templ & t = * ttk.find_template( i, l );
+                std::cout << "templ " << i << ":" << lang_tools::to_string( l ) << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
+            }
+        }
+    }
+}
+
+void test_02( const templtext::Templ & t )
 {
     std::cout << "TEST 02" << std::endl;
 
@@ -59,7 +92,7 @@ void test02( const templtext::Templ & t )
     }
 }
 
-void test03( const templtext::Templ & t )
+void test_03( const templtext::Templ & t )
 {
     std::cout << "TEST 03" << std::endl;
 
@@ -78,7 +111,7 @@ void test03( const templtext::Templ & t )
     }
 }
 
-void test04( const templtext::Templ & t )
+void test_04( const templtext::Templ & t )
 {
     std::cout << "TEST 04" << std::endl;
 
@@ -98,7 +131,7 @@ void test04( const templtext::Templ & t )
     }
 }
 
-void test05( const templtext::Templ & t )
+void test_05( const templtext::Templ & t )
 {
     std::cout << "TEST 05" << std::endl;
 
@@ -121,7 +154,7 @@ void test05( const templtext::Templ & t )
 }
 
 
-void test06( const templtext::Templ & t )
+void test_06( const templtext::Templ & t )
 {
     std::cout << "TEST 06" << std::endl;
 
@@ -144,46 +177,59 @@ void test06( const templtext::Templ & t )
     }
 }
 
+void test_07( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    std::string name( "Text05" );
+
+    std::cout << "07. looking for template named: " << name << std::endl;
+
+    auto id = ttk.find_template_id_by_name( name );
+
+    if( id )
+    {
+        std::cout << "07. OK: id = " << id << std::endl;
+    }
+    else
+    {
+        std::cout << "07. ERROR: cannot find template named " << name << std::endl;
+    }
+}
+
+void test_08( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    std::string name( "xxx" );
+
+    std::cout << "08. looking for non-existing template named: " << name << std::endl;
+
+    auto id = ttk.find_template_id_by_name( name );
+
+    if( id == 0 )
+    {
+        std::cout << "08. OK: non-existing template not found" << std::endl;
+    }
+    else
+    {
+        std::cout << "08. ERROR: non-existing template found: id = " << id << std::endl;
+    }
+}
+
 int main()
 {
-    templtextkeeper::TemplTextKeeper tt;
+    templtextkeeper::TemplTextKeeper ttk;
 
-    tt.init( "templates.csv" );
+    ttk.init( "templates.csv" );
 
-    templtextkeeper::TemplTextKeeper::Records info;
+    const templtext::Templ & t = * ttk.find_template( 3, lang_tools::lang_e::EN );
 
-    tt.get_templates( info );
-
-    std::cout << "all templates:\n" << std::endl;
-
-    for( auto & e : info )
-    {
-        std::cout << e.id << ";" << e.name << ";" << lang_tools::to_string_iso( e.locale ) << ";" << e.localized_name << ";" << std::endl;
-    }
-
-    std::cout << "\ntests:\n" << std::endl;
-
-    std::vector<lang_tools::lang_e> langs   = { lang_tools::lang_e::EN, lang_tools::lang_e::DE, lang_tools::lang_e::RU };
-
-    for( unsigned int i = 1; i <= 7; ++i )
-    {
-        for( auto l : langs )
-        {
-            if( tt.has_template( i, l ) )
-            {
-                const templtext::Templ & t = * tt.find_template( i, l );
-                std::cout << "templ " << i << ":" << lang_tools::to_string( l ) << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
-            }
-        }
-    }
-
-    const templtext::Templ & t = * tt.find_template( 3, lang_tools::lang_e::EN );
-
-    test02( t );
-    test03( t );
-    test04( t );
-    test05( t );
-    test06( t );
+    test_01( ttk );
+    test_01_b( ttk );
+    test_02( t );
+    test_03( t );
+    test_04( t );
+    test_05( t );
+    test_06( t );
+    test_07( ttk );
+    test_08( ttk );
 
     return 0;
 }

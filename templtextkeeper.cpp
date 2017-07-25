@@ -19,14 +19,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 5917 $ $Date:: 2017-03-06 #$ $Author: serge $
+// $Revision: 7368 $ $Date:: 2017-07-25 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 
-#include "../utils/read_config_file.h"  // read_config_file
-#include "../utils/tokenizer.h"         // tokenize_to_vector
-#include "../lang_tools/parser.h"       // lang_tools::to_lang_iso
-#include "../lang_tools/str_helper.h"   // lang_tools::to_string_iso
+#include "utils/read_config_file.h"     // read_config_file
+#include "utils/tokenizer.h"            // tokenize_to_vector
+#include "lang_tools/parser.h"          // lang_tools::to_lang_iso
+#include "lang_tools/str_helper.h"      // lang_tools::to_string_iso
 
 #include <stdexcept>                    // std::invalid_argument
 
@@ -173,7 +173,7 @@ TemplTextKeeper::LocalizedTemplate TemplTextKeeper::to_localized_templ( const st
 
     try
     {
-        res.id   = std::stoi( elems[1] );
+        res.id          = std::stoi( elems[1] );
         res.locale      = lang_tools::to_lang_iso( elems[2] );
         res.name        = elems[3];
         res.templ       = elems[4];
@@ -194,7 +194,7 @@ void TemplTextKeeper::parse_lines( const std::vector<std::string> & lines )
     }
 }
 
-bool TemplTextKeeper::has_template( uint32_t id, lang_tools::lang_e locale ) const
+bool TemplTextKeeper::has_template( id_t id, lang_tools::lang_e locale ) const
 {
     auto it = templs_.find( id );
 
@@ -211,7 +211,7 @@ bool TemplTextKeeper::has_template( uint32_t id, lang_tools::lang_e locale ) con
     return true;
 }
 
-const TemplTextKeeper::Templ * TemplTextKeeper::find_template( uint32_t id, lang_tools::lang_e locale ) const
+const TemplTextKeeper::Templ * TemplTextKeeper::find_template( id_t id, lang_tools::lang_e locale ) const
 {
     auto it = templs_.find( id );
 
@@ -224,6 +224,16 @@ const TemplTextKeeper::Templ * TemplTextKeeper::find_template( uint32_t id, lang
         return nullptr;
 
     return it2->second.t;
+}
+
+const id_t TemplTextKeeper::find_template_id_by_name( const std::string & name ) const
+{
+    auto it = templ_names_.find( name );
+
+    if( it == templ_names_.end() )
+        return 0;
+
+    return it->second;
 }
 
 const TemplTextKeeper::Records & TemplTextKeeper::get_templates( Records & res ) const
