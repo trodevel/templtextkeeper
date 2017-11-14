@@ -1,10 +1,10 @@
-T;1;Text01
-T;2;Text02
-T;3;Text03
-T;4;Text04
-T;5;Text05
-T;6;Text06
-T;7;Text07
+T;1;1;Text01
+T;2;2;Text02
+T;3;3;Text03
+T;4;3;Text04
+T;5;4;Text05
+T;6;4;Text06
+T;7;4;Text07
 
 L;1;en;Say;$TEXT.
 L;1;de;Sagen;$TEXT.

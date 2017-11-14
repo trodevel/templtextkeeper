@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 7364 $ $Date:: 2017-07-25 #$ $Author: serge $
+// $Revision: 8368 $ $Date:: 2017-11-14 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_TYPES_H
 #define LIB_TEMPLTEXTKEEPER_TYPES_H
@@ -31,6 +31,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 NAMESPACE_TEMPLTEXTKEEPER_START
 
 typedef uint32_t id_t;
+typedef uint32_t group_id_t;
 
 NAMESPACE_TEMPLTEXTKEEPER_END
 

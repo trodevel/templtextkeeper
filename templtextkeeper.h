@@ -19,13 +19,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 7368 $ $Date:: 2017-07-25 #$ $Author: serge $
+// $Revision: 8368 $ $Date:: 2017-11-14 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_H
 #define LIB_TEMPLTEXTKEEPER_H
 
 #include <string>                   // std::string
 #include <map>                      // std::map
+#include <limits>                   // std::numeric_limits
 
 #include "templtext/templ.h"        // Templ
 #include "lang_tools/language_enum.h"    // lang_tools::lang_e
@@ -42,6 +43,7 @@ public:
     struct Record
     {
         id_t                id;
+        group_id_t          group_id;
         lang_tools::lang_e  locale;
         std::string         name;
         std::string         localized_name;
@@ -58,18 +60,25 @@ public:
     bool init(
             const std::string & config_file );
 
-    bool has_template( id_t id, lang_tools::lang_e locale ) const;
-    const Templ * find_template( id_t id, lang_tools::lang_e locale ) const;
-    const id_t find_template_id_by_name( const std::string & name ) const;
+    Records find_templates(
+            uint32_t            * total_size,
+            group_id_t          group_id,
+            const std::string   & filter,
+            lang_tools::lang_e  locale,
+            uint32_t            page_size   = std::numeric_limits<uint32_t>::max(),
+            uint32_t            page_num    = 0 ) const;
 
-    const Records & get_templates( Records & res ) const;
+    bool has_template( id_t id, lang_tools::lang_e locale ) const;
+    const Templ * get_template( id_t id, lang_tools::lang_e locale ) const;
+    const id_t find_template_id_by_name( const std::string & name ) const;
 
 private:
 
     struct GeneralTemplate
     {
-        id_t        id;
-        std::string name;
+        id_t            id;
+        group_id_t      group_id;
+        std::string     name;
     };
 
     struct LocalizedTemplate
@@ -92,6 +101,7 @@ private:
     struct TemplateInfo
     {
         std::string             name;
+        group_id_t              group_id;
         MapLocaleToLocTemplInfo localized_templ_info;
     };
 
@@ -108,6 +118,9 @@ private:
     LocalizedTemplate   to_localized_templ( const std::string & l );
 
     void parse_lines( const std::vector<std::string> & lines );
+
+    static bool is_match( const TemplateInfo & c, group_id_t group_id );
+    static bool is_match( const MapLocaleToLocTemplInfo::value_type & c, const std::string & name_filter, lang_tools::lang_e lang );
 
 private:
 

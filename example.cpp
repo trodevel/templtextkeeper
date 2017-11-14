@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 7371 $ $Date:: 2017-07-25 #$ $Author: serge $
+// $Revision: 8368 $ $Date:: 2017-11-14 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
@@ -41,18 +41,30 @@ std::string show_placeholders( const std::set<std::string> & ph )
     return os.str();
 }
 
-void test_01( const templtextkeeper::TemplTextKeeper & ttk )
+void print( const templtextkeeper::TemplTextKeeper::Record & e )
 {
-    templtextkeeper::TemplTextKeeper::Records info;
+    std::cout << e.id << ";" << e.group_id << ";" << e.name << ";" << lang_tools::to_string_iso( e.locale ) << ";" << e.localized_name << ";" << std::endl;
+}
 
-    ttk.get_templates( info );
-
-    std::cout << "all templates:\n" << std::endl;
+void print( uint32_t total_size, const templtextkeeper::TemplTextKeeper::Records & info )
+{
+    std::cout << "templates (" << total_size << "):\n" << std::endl;
 
     for( auto & e : info )
     {
-        std::cout << e.id << ";" << e.name << ";" << lang_tools::to_string_iso( e.locale ) << ";" << e.localized_name << ";" << std::endl;
+        print( e );
     }
+
+    std::cout << std::endl;
+}
+
+void test_01( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    uint32_t total_size;
+
+    templtextkeeper::TemplTextKeeper::Records info = ttk.find_templates( & total_size, 0, "", lang_tools::lang_e::UNDEF, 1000, 0 );
+
+    print( total_size, info );
 }
 
 void test_01_b( const templtextkeeper::TemplTextKeeper & ttk )
@@ -67,7 +79,7 @@ void test_01_b( const templtextkeeper::TemplTextKeeper & ttk )
         {
             if( ttk.has_template( i, l ) )
             {
-                const templtext::Templ & t = * ttk.find_template( i, l );
+                const templtext::Templ & t = * ttk.get_template( i, l );
                 std::cout << "templ " << i << ":" << lang_tools::to_string( l ) << " - " << t.get_template() << " " << show_placeholders( t.get_placeholders() ) << std::endl;
             }
         }
@@ -213,13 +225,67 @@ void test_08( const templtextkeeper::TemplTextKeeper & ttk )
     }
 }
 
+void test_09_find_templates( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    uint32_t total_size;
+
+    templtextkeeper::TemplTextKeeper::Records info = ttk.find_templates( & total_size, 0, "sa", lang_tools::lang_e::UNDEF, 1000, 0 );
+
+    print( total_size, info );
+}
+
+void test_10_find_templates( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    uint32_t total_size;
+
+    templtextkeeper::TemplTextKeeper::Records info = ttk.find_templates( & total_size, 0, "sa", lang_tools::lang_e::DE, 1000, 0 );
+
+    print( total_size, info );
+}
+
+void test_11_find_templates( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    uint32_t total_size;
+
+    templtextkeeper::TemplTextKeeper::Records info = ttk.find_templates( & total_size, 0, "", lang_tools::lang_e::RU, 1000, 0 );
+
+    print( total_size, info );
+}
+
+void test_12_find_templates( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    uint32_t total_size;
+
+    templtextkeeper::TemplTextKeeper::Records info = ttk.find_templates( & total_size, 0, "ü", lang_tools::lang_e::UNDEF, 1000, 0 );
+
+    print( total_size, info );
+}
+
+void test_13_find_templates( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    uint32_t total_size;
+
+    templtextkeeper::TemplTextKeeper::Records info = ttk.find_templates( & total_size, 3, "", lang_tools::lang_e::EN );
+
+    print( total_size, info );
+}
+
+void test_14_find_templates( const templtextkeeper::TemplTextKeeper & ttk )
+{
+    uint32_t total_size;
+
+    templtextkeeper::TemplTextKeeper::Records info = ttk.find_templates( & total_size, 3, "", lang_tools::lang_e::DE );
+
+    print( total_size, info );
+}
+
 int main()
 {
     templtextkeeper::TemplTextKeeper ttk;
 
     ttk.init( "templates.csv" );
 
-    const templtext::Templ & t = * ttk.find_template( 3, lang_tools::lang_e::EN );
+    const templtext::Templ & t = * ttk.get_template( 3, lang_tools::lang_e::EN );
 
     test_01( ttk );
     test_01_b( ttk );
@@ -230,6 +296,12 @@ int main()
     test_06( t );
     test_07( ttk );
     test_08( ttk );
+    test_09_find_templates( ttk );
+    test_10_find_templates( ttk );
+    test_11_find_templates( ttk );
+    test_12_find_templates( ttk );
+    test_13_find_templates( ttk );
+    test_14_find_templates( ttk );
 
     return 0;
 }
