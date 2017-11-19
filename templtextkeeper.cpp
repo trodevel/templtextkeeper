@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8368 $ $Date:: 2017-11-14 #$ $Author: serge $
+// $Revision: 8373 $ $Date:: 2017-11-15 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 
@@ -93,7 +93,7 @@ void TemplTextKeeper::process_line_t( const std::string & line )
 
     TemplateInfo info;
 
-    info.group_id    = e.group_id;
+    info.category_id    = e.category_id;
     info.name           = e.name;
 
     auto b = templs_.insert( MapIdToTemplateInfo::value_type( e.id, info ) ).second;
@@ -152,7 +152,7 @@ TemplTextKeeper::GeneralTemplate TemplTextKeeper::to_general_templ( const std::s
     try
     {
         res.id          = std::stoi( elems[1] );
-        res.group_id = std::stoi( elems[2] );
+        res.category_id = std::stoi( elems[2] );
         res.name        = elems[3];
     }
     catch( std::exception & e )
@@ -241,7 +241,7 @@ const id_t TemplTextKeeper::find_template_id_by_name( const std::string & name )
 
 TemplTextKeeper::Records TemplTextKeeper::find_templates(
         uint32_t            * total_size,
-        group_id_t          group_id,
+        category_id_t       category_id,
         const std::string   & filter,
         lang_tools::lang_e  locale,
         uint32_t            page_size,
@@ -260,7 +260,7 @@ TemplTextKeeper::Records TemplTextKeeper::find_templates(
     {
         auto & loc = t.second.localized_templ_info;
 
-        if( is_match( t.second, group_id ) == false )
+        if( is_match( t.second, category_id ) == false )
             continue;
 
         for( auto & l : loc )
@@ -273,7 +273,7 @@ TemplTextKeeper::Records TemplTextKeeper::find_templates(
                     Record r;
 
                     r.id                = t.first;
-                    r.group_id       = t.second.group_id;
+                    r.category_id       = t.second.category_id;
                     r.name              = t.second.name;
 
                     r.locale            = l.first;
@@ -293,9 +293,9 @@ TemplTextKeeper::Records TemplTextKeeper::find_templates(
     return res;
 }
 
-bool TemplTextKeeper::is_match( const TemplateInfo & c, group_id_t group_id )
+bool TemplTextKeeper::is_match( const TemplateInfo & c, category_id_t category_id )
 {
-    if( group_id != 0 && group_id != c.group_id )
+    if( category_id != 0 && category_id != c.category_id )
         return false;
 
     return true;

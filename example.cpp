@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8368 $ $Date:: 2017-11-14 #$ $Author: serge $
+// $Revision: 8373 $ $Date:: 2017-11-15 #$ $Author: serge $
 
 #include <cstdio>
 #include <sstream>                          // std::stringstream
@@ -43,7 +43,7 @@ std::string show_placeholders( const std::set<std::string> & ph )
 
 void print( const templtextkeeper::TemplTextKeeper::Record & e )
 {
-    std::cout << e.id << ";" << e.group_id << ";" << e.name << ";" << lang_tools::to_string_iso( e.locale ) << ";" << e.localized_name << ";" << std::endl;
+    std::cout << e.id << ";" << e.category_id << ";" << e.name << ";" << lang_tools::to_string_iso( e.locale ) << ";" << e.localized_name << ";" << std::endl;
 }
 
 void print( uint32_t total_size, const templtextkeeper::TemplTextKeeper::Records & info )

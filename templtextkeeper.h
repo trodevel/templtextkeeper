@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8368 $ $Date:: 2017-11-14 #$ $Author: serge $
+// $Revision: 8373 $ $Date:: 2017-11-15 #$ $Author: serge $
 
 #ifndef LIB_TEMPLTEXTKEEPER_H
 #define LIB_TEMPLTEXTKEEPER_H
@@ -43,7 +43,7 @@ public:
     struct Record
     {
         id_t                id;
-        group_id_t          group_id;
+        category_id_t       category_id;
         lang_tools::lang_e  locale;
         std::string         name;
         std::string         localized_name;
@@ -62,7 +62,7 @@ public:
 
     Records find_templates(
             uint32_t            * total_size,
-            group_id_t          group_id,
+            category_id_t       category_id,
             const std::string   & filter,
             lang_tools::lang_e  locale,
             uint32_t            page_size   = std::numeric_limits<uint32_t>::max(),
@@ -77,7 +77,7 @@ private:
     struct GeneralTemplate
     {
         id_t            id;
-        group_id_t      group_id;
+        category_id_t   category_id;
         std::string     name;
     };
 
@@ -101,7 +101,7 @@ private:
     struct TemplateInfo
     {
         std::string             name;
-        group_id_t              group_id;
+        category_id_t           category_id;
         MapLocaleToLocTemplInfo localized_templ_info;
     };
 
@@ -119,7 +119,7 @@ private:
 
     void parse_lines( const std::vector<std::string> & lines );
 
-    static bool is_match( const TemplateInfo & c, group_id_t group_id );
+    static bool is_match( const TemplateInfo & c, category_id_t category_id );
     static bool is_match( const MapLocaleToLocTemplInfo::value_type & c, const std::string & name_filter, lang_tools::lang_e lang );
 
 private:
