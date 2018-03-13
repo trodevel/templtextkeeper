@@ -19,11 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8373 $ $Date:: 2017-11-15 #$ $Author: serge $
+// $Revision: 8742 $ $Date:: 2018-03-12 #$ $Author: serge $
 
 #include "templtextkeeper.h"            // self
 
-#include "utils/read_config_file.h"     // read_config_file
+#include "utils/read_config_file.h"     // utils::read_config_file
 #include "utils/tokenizer.h"            // tokenize_to_vector
 #include "utils/match_filter.h"         // utils::match_filter()
 #include "lang_tools/parser.h"          // lang_tools::to_lang_iso
@@ -56,7 +56,7 @@ bool TemplTextKeeper::init(
     {
         std::vector<std::string> lines;
 
-        read_config_file( config_file, lines );
+        utils::read_config_file( config_file, lines );
 
         parse_lines( lines );
     }
